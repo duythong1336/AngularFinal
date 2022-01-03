@@ -1,0 +1,90 @@
+th:last-child,
+td:last-child {
+  text-align: center;
+}
+i {
+  font-size: 15px;
+}
+a {
+  padding: 0px;
+}
+.action-bar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+/* .left-bar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+} */
+#inlineFormInputGroup {
+  color: white;
+  border-color: white;
+  margin-top: 0px;
+}
+.fa {
+  transform: scale(1.5, 1);
+}
+.input-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.input-line {
+  display: flex;
+  flex-direction: column;
+}
+label {
+  margin: 0px;
+}
+input {
+  margin-top: 2px;
+}
+.modal-body {
+  line-height: 2;
+}
+.modal-footer {
+  justify-content: flex-end;
+}
+select,
+input {
+  width: 200px;
+  height: 40px;
+  border-radius: 5px;
+  padding: 5px 2px 5px 2px;
+}
+input#inlineFormInputGroup {
+  border: 1px solid white;
+  padding: 5px;
+}
+input#inlineFormInputGroup:focus {
+  border: 3px solid white;
+  padding: 5px;
+}
+#add-product,
+#add-btn {
+  color: white;
+}
+::placeholder {
+  color: #adb5bd;
+  opacity: 1;
+}
+.btn-link {
+  text-decoration: none;
+}
+.error {
+  border: 3px solid red;
+}
+.error:focus {
+  border: 3px solid red;
+}
+.success {
+  border: 2px solid black;
+}
+.success:focus {
+  border: 2px solid black;
+}

@@ -1,0 +1,578 @@
+<div class="col">
+    <div class="card bg-default shadow">
+      <div class="card-header bg-transparent border-0">
+        <h3 class="text-white mb-0">Data NodeJS</h3>
+        <button
+              type="button"
+              id="add-product"
+              class="btn btn-success"
+              (click)="open(addModal, addID, $event)"
+            >
+              <i class="fas fa-plus fa-lg"></i>
+              ADD NEW
+            </button>
+      </div>
+      <div class="table-responsive">
+        <table class="table align-items-center table-dark table-flush">
+          <thead class="thead-dark">
+            <th scope="col">Title</th>
+            <th scope="col">Author</th>
+            <th scope="col">Description</th>
+            <th scope="col">Type</th>
+            <th scope="col">Price</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Action</th>
+          </thead>
+          <tbody class="list">
+            <tr  *ngFor="
+            let book of bookList
+              | slice: (page - 1) * pageSize:page * pageSize
+          "
+        >
+          <td>{{book.Title}}</td>
+          <td>{{book.Author}}</td>
+          <td>{{book.Description}}</td>
+          <td>{{book.Type}}</td>
+          <td>{{book.Price}}</td>
+          <td>{{book.Quantity}}</td>
+          
+          <td>
+            <button
+              type="button"
+              class="btn btn-danger btn-round"
+              id="{{ book.Id }}"
+              (click)="open(updateModal, updateID, $event)"
+              style="margin-right: 15px"
+            >
+              Update
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary btn-round"
+              id="{{ book.Id }}"
+              (click)="deleteBook($event)"
+              style="margin-left: 15px"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="d-flex justify-content-between p-2">
+        <ngb-pagination
+            [(page)]="page"
+            [pageSize]="pageSize"
+            [collectionSize]="bookList.length"
+            > </ngb-pagination>
+          <pre>Total:{{ bookList.length }}</pre>
+          <!-- <pagination-controls
+            (pageChange)="pageChanged($event)"
+          ></pagination-controls> -->
+        </div>
+    </div>
+  </div>
+
+  <ng-template #addModal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Add new Book</h4>
+      <button
+        type="button"
+        class="close"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="addForm" (ngSubmit)="addBook()" id="add-form">
+        <div class="form-group">
+          <div class="input-group">
+            <div class="input-line">
+              <label for="title">Title</label>
+              <input
+                type="text"
+                [class]="
+                  addForm.controls.title.invalid &&
+                  (addForm.controls.title.dirty || addForm.controls.title.touched)
+                    ? 'error'
+                    : 'success'
+                "
+                placeholder="Journey ...."
+                id="add-title"
+                formControlName="title"
+                required
+              />
+              <div
+                *ngIf="
+                  addForm.controls.title.invalid &&
+                  (addForm.controls.title.dirty || addForm.controls.title.touched)
+                "
+                class="text-danger"
+              >
+                <small
+                  *ngIf="addForm.controls.title.hasError('required')"
+                  class="text-danger"
+                  >Title is required.</small
+                >
+                <small
+                  *ngIf="
+                    addForm.controls.title.hasError('minlength') ||
+                    addForm.controls.title.hasError('maxlength')
+                  "
+                  class="text-danger"
+                  >Title length from 4 to 16 characters.</small
+                >
+              </div>
+            </div>
+            <div class="input-line">
+              <label for="author">Author</label>
+              <input
+                type="text"
+                [class]="
+                  addForm.controls.author.invalid &&
+                  (addForm.controls.author.dirty || addForm.controls.author.touched)
+                    ? 'error'
+                    : 'success'
+                "
+                placeholder="Author"
+                id="add-author"
+                formControlName="author"
+                required
+              />
+              <div
+                *ngIf="
+                  addForm.controls.author.invalid &&
+                  (addForm.controls.author.dirty || addForm.controls.author.touched)
+                "
+                class="text-danger"
+              >
+                <small
+                  *ngIf="addForm.controls.author.hasError('required')"
+                  class="text-danger"
+                  >Author is required</small
+                >
+                <small
+                  *ngIf="
+                    addForm.controls.author.hasError('minlength') ||
+                    addForm.controls.author.hasError('maxlength')
+                  "
+                  class="text-danger"
+                  >Author length from 4 to 30 characters.</small
+                >
+              </div>
+            </div>
+            <div class="input-line">
+              <label for="type">Type</label>
+              <select
+                id="add-type"
+                formControlName="type"
+                [class]="
+                  (addForm.controls.type.dirty ||
+                    addForm.controls.type.touched) &&
+                  this.addForm.controls.type.value === 'Choose a type'
+                    ? 'error'
+                    : 'success'
+                "
+              >
+                <option *ngFor="let type of types" [ngValue]="type.Name">
+                  {{ type.Name }}
+                </option>
+              </select>
+              <div
+                *ngIf="
+                  addForm.controls.type.dirty || addForm.controls.type.touched
+                "
+                class="text-danger"
+              >
+                <small
+                  *ngIf="this.addForm.controls.type.value === 'Choose a type'"
+                  class="text-danger"
+                >
+                  Choose a type, please!</small
+                >
+              </div>
+            </div>
+            <div class="input-line">
+              <label for="price">Price</label>
+              <input
+                type="number"
+                [class]="
+                  addForm.controls.price.invalid &&
+                  (addForm.controls.price.dirty || addForm.controls.price.touched)
+                    ? 'error'
+                    : 'success'
+                "
+                placeholder="Price"
+                id="add-price"
+                formControlName="price"
+                required
+              />
+              <div
+                *ngIf="
+                  addForm.controls.price.invalid &&
+                  (addForm.controls.price.dirty || addForm.controls.price.touched)
+                "
+                class="text-danger"
+              >
+                <small
+                  *ngIf="this.addForm.controls.price.hasError('required')"
+                  class="text-danger"
+                >
+                  Price is required</small
+                >
+                <small
+                  *ngIf="this.addForm.controls.price.hasError('pattern')"
+                  class="text-danger"
+                >
+                  Invalid price!
+                </small>
+              </div>
+            </div>
+            <div class="input-line">
+              <label for="quantity">Quantity</label>
+              <input
+                type="number"
+                [class]="
+                addForm.controls.quantity.invalid &&
+                  (addForm.controls.quantity.dirty || addForm.controls.quantity.touched)
+                    ? 'error'
+                    : 'success'
+                "
+                placeholder="Quantity"
+                id="add-quantity"
+                formControlName="quantity"
+                required
+              />
+              <div
+                *ngIf="
+                addForm.controls.quantity.invalid &&
+                  (addForm.controls.quantity.dirty || addForm.controls.quantity.touched)
+                "
+                class="text-danger"
+              >
+                <small
+                  *ngIf="this.addForm.controls.quantity.hasError('required')"
+                  class="text-danger"
+                >
+                  Quantity is required</small
+                >
+                <small
+                  *ngIf="this.addForm.controls.quantity.hasError('pattern')"
+                  class="text-danger"
+                >
+                  Invalid quantity!
+                </small>
+              </div>
+            </div>
+            <div class="input-line">
+              <label for="description">Description</label>
+              <input
+                type="text"
+                [class]="
+                  addForm.controls.description.invalid &&
+                  (addForm.controls.description.dirty ||
+                    addForm.controls.description.touched)
+                    ? 'error'
+                    : 'success'
+                "
+                placeholder="Description"
+                id="add-description"
+                formControlName="description"
+                required
+              />
+              <div
+                *ngIf="
+                  addForm.controls.description.invalid &&
+                  (addForm.controls.description.dirty ||
+                    addForm.controls.description.touched)
+                "
+                class="text-danger"
+              >
+                <small
+                  *ngIf="this.addForm.controls.description.hasError('required')"
+                  class="text-danger"
+                >
+                  Description is required</small
+                >
+                <small
+                  *ngIf="this.addForm.controls.description.hasError('pattern')"
+                  class="text-danger"
+                >
+                  Invalid Description!
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button
+        id="add-btn"
+        type="submit"
+        class="btn btn-success"
+        (click)="addBook()"
+        [disabled]="
+          addForm.invalid ||
+          addForm.controls.type.value === 'Choose a types'
+        "
+      >
+        ADD
+      </button>
+    </div>
+  </ng-template>
+  
+  <ng-template #updateModal let-modal id="update-modal">
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Update Book</h4>
+      <button
+        type="button"
+        class="close"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="updateForm"  id="update-form">
+        <div class="form-group">
+          <div class="input-group">
+            <div class="input-line">
+              <label for="title">Title</label>
+              <input
+                type="text"
+                [class]="
+                updateForm.controls.title.invalid &&
+                  (updateForm.controls.title.dirty || updateForm.controls.title.touched)
+                    ? 'error'
+                    : 'success'
+                "
+                placeholder="Journey ...."
+                id="add-title"
+                formControlName="title"
+                required
+              />
+              <div
+                *ngIf="
+                updateForm.controls.title.invalid &&
+                  (updateForm.controls.title.dirty || updateForm.controls.title.touched)
+                "
+                class="text-danger"
+              >
+                <small
+                  *ngIf="updateForm.controls.title.hasError('required')"
+                  class="text-danger"
+                  >Title is required.</small
+                >
+                <small
+                  *ngIf="
+                  updateForm.controls.title.hasError('minlength') ||
+                  updateForm.controls.title.hasError('maxlength')
+                  "
+                  class="text-danger"
+                  >Title length from 4 to 30 characters.</small
+                >
+              </div>
+            </div>
+            <div class="input-line">
+              <label for="author">Author</label>
+              <input
+                type="text"
+                [class]="
+                updateForm.controls.author.invalid &&
+                  (updateForm.controls.author.dirty || updateForm.controls.author.touched)
+                    ? 'error'
+                    : 'success'
+                "
+                placeholder="Author"
+                id="add-author"
+                formControlName="author"
+                required
+              />
+              <div
+                *ngIf="
+                updateForm.controls.author.invalid &&
+                  (updateForm.controls.author.dirty || updateForm.controls.author.touched)
+                "
+                class="text-danger"
+              >
+                <small
+                  *ngIf="updateForm.controls.author.hasError('required')"
+                  class="text-danger"
+                  >Author is required</small
+                >
+                <small
+                  *ngIf="
+                  updateForm.controls.author.hasError('minlength') ||
+                  updateForm.controls.author.hasError('maxlength')
+                  "
+                  class="text-danger"
+                  >Author length from 4 to 30 characters.</small
+                >
+              </div>
+            </div>
+            <div class="input-line">
+              <label for="type">Type</label>
+              <select
+                id="add-type"
+                formControlName="type"
+                [class]="
+                  (updateForm.controls.type.dirty ||
+                  updateForm.controls.type.touched) &&
+                  this.updateForm.controls.type.value === 'Choose a type'
+                    ? 'error'
+                    : 'success'
+                "
+              >
+                <option *ngFor="let type of types" [ngValue]="type.Name">
+                  {{ type.Name }}
+                </option>
+              </select>
+              <div
+                *ngIf="
+                updateForm.controls.type.dirty || updateForm.controls.type.touched
+                "
+                class="text-danger"
+              >
+                <small
+                  *ngIf="this.updateForm.controls.type.value === 'Choose a type'"
+                  class="text-danger"
+                >
+                  Choose a type, please!</small
+                >
+              </div>
+            </div>
+            <div class="input-line">
+              <label for="price">Price</label>
+              <input
+                type="number"
+                [class]="
+                updateForm.controls.price.invalid &&
+                  (updateForm.controls.price.dirty || updateForm.controls.price.touched)
+                    ? 'error'
+                    : 'success'
+                "
+                placeholder="Price"
+                id="add-price"
+                formControlName="price"
+                required
+              />
+              <div
+                *ngIf="
+                updateForm.controls.price.invalid &&
+                  (updateForm.controls.price.dirty || updateForm.controls.price.touched)
+                "
+                class="text-danger"
+              >
+                <small
+                  *ngIf="this.updateForm.controls.price.hasError('required')"
+                  class="text-danger"
+                >
+                  Price is required</small
+                >
+                <small
+                  *ngIf="this.updateForm.controls.price.hasError('pattern')"
+                  class="text-danger"
+                >
+                  Invalid price!
+                </small>
+              </div>
+            </div>
+            <div class="input-line">
+              <label for="quantity">Quantity</label>
+              <input
+                type="number"
+                [class]="
+                updateForm.controls.quantity.invalid &&
+                  (updateForm.controls.quantity.dirty || updateForm.controls.quantity.touched)
+                    ? 'error'
+                    : 'success'
+                "
+                placeholder="Quantity"
+                id="add-quantity"
+                formControlName="quantity"
+                required
+              />
+              <div
+                *ngIf="
+                updateForm.controls.quantity.invalid &&
+                  (updateForm.controls.quantity.dirty || updateForm.controls.quantity.touched)
+                "
+                class="text-danger"
+              >
+                <small
+                  *ngIf="this.updateForm.controls.quantity.hasError('required')"
+                  class="text-danger"
+                >
+                  Quantity is required</small
+                >
+                <small
+                  *ngIf="this.updateForm.controls.quantity.hasError('pattern')"
+                  class="text-danger"
+                >
+                  Invalid quantity!
+                </small>
+              </div>
+            </div>
+            <div class="input-line">
+              <label for="description">Description</label>
+              <input
+                type="text"
+                [class]="
+                updateForm.controls.description.invalid &&
+                  (updateForm.controls.description.dirty ||
+                  updateForm.controls.description.touched)
+                    ? 'error'
+                    : 'success'
+                "
+                placeholder="Description"
+                id="add-description"
+                formControlName="description"
+                required
+              />
+              <div
+                *ngIf="
+                updateForm.controls.description.invalid &&
+                  (updateForm.controls.description.dirty ||
+                  updateForm.controls.description.touched)
+                "
+                class="text-danger"
+              >
+                <small
+                  *ngIf="this.updateForm.controls.description.hasError('required')"
+                  class="text-danger"
+                >
+                  Description is required</small
+                >
+                <small
+                  *ngIf="this.updateForm.controls.description.hasError('pattern')"
+                  class="text-danger"
+                >
+                  Invalid Description!
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button
+        id="add-btn"
+        type="submit"
+        class="btn btn-success"
+        (click)="updateBook()"
+        [disabled]="
+        updateForm.invalid ||
+        updateForm.controls.type.value === 'Choose a type'
+        "
+      >
+        Update
+      </button>
+    </div>
+  </ng-template>
+  
